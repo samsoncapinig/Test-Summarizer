@@ -2,10 +2,16 @@ import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 
-st.set_page_config(page.title("📊 Pretest vs Posttest Dashboard with Gain Analysis")st.set_page_config(page_title="Advanced LMS Dashboard", layout="wide")
+# ✅ Correct configuration
+st.set_page_config(
+    page_title="Advanced LMS Dashboard",
+    layout="wide"
+)
+
+# ✅ Title (separate line)
+st.title("📊 Pretest vs Posttest Dashboard with Gain Analysis")
 
 st.info("Upload Pretest and Posttest Excel files (multiple allowed). Uses 75% passing rate.")
-
 uploaded_files = st.file_uploader(
     "Upload Excel Files",
     type=['xlsx'],

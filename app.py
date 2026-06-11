@@ -1,52 +1,52 @@
+
 import streamlit as st
 import pandas as pd
-import matplotlib.pyplot as plt
 
-# ✅ Correct configuration
-st.set_page_config(
-    page_title="Advanced LMS Dashboard",
-    layout="wide"
-)
+st.set_page_config(page_title="Assessment Summary", layout="wide")
 
-# ✅ Title (separate line)
-st.title("📊 Pretest vs Posttest Dashboard with Gain Analysis")
+st.title("📊 Pretest/Posttest Summary Dashboard")
 
-st.info("Upload Pretest and Posttest Excel files (multiple allowed). Uses 75% passing rate.")
-uploaded_files = st.file_uploader(
-    "Upload Excel Files",
-    type=['xlsx'],
-    accept_multiple_files=True
-)
+st.info("Upload MS Forms quiz Excel (like your sample). App auto-computes totals using 'Total points'. Passing rate = 75%.")
 
-if uploaded_files:
-    all_data = []
+uploaded = st.file_uploader("Upload Excel File", type=['xlsx'])
 
-    for file in uploaded_files:
-        df = pd.read_excel(file, engine='openpyxl')
+if uploaded:
+    df = pd.read_excel(uploaded, engine='openpyxl')
 
-        # Identify test type automatically
-        filename = file.name.lower()
-        if 'pre' in filename:
-            test_type = 'Pretest'
-        elif 'post' in filename:
-            test_type = 'Posttest'
-        else:
-            test_type = 'Unknown'
+    st.subheader("Raw Data Preview")
+    st.dataframe(df.head())
 
-        df['Test'] = test_type
-        df['Source_File'] = file.name
-
-        all_data.append(df)
-
-    data = pd.concat(all_data, ignore_index=True)
-
-    st.subheader("📄 Combined Data Preview")
-    st.dataframe(data.head())
-
-    if 'Total points' not in data.columns:
-        st.error("❌ Missing 'Total points' column.")
+    # Detect score column
+    if 'Total points' not in df.columns:
+        st.error("Column 'Total points' not found.")
     else:
-        # Compute passing threshold
-        max_score = data['Total points'].max()
+        max_score = df['Total points'].max()
+        passing_score = max_score * 0.75
 
+        df['Passed'] = df['Total points'] >= passing_score
 
+        total = len(df)
+        passers = df['Passed'].sum()
+        failed = total - passers
+        pct = (passers/total)*100
+
+        # Build output table
+        result = pd.DataFrame({
+            'Subjects Taken':['Filipino 6'],
+            'Number of Takers':[total],
+            'Number of Passers':[passers],
+            'Number of Failed':[failed],
+            'Percentage Passing':[round(pct,2)]
+        })
+
+        st.subheader("📈 Summary Results")
+        st.dataframe(result)
+
+        # download
+        file='summary.xlsx'
+        result.to_excel(file, index=False, engine='openpyxl')
+
+        with open(file,'rb') as f:
+            st.download_button("⬇️ Download Excel", f, file_name='summary.xlsx')
+
+        st.success("Analysis complete ✅")

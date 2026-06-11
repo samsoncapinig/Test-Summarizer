@@ -4,49 +4,50 @@ import pandas as pd
 
 st.set_page_config(page_title="Assessment Summary", layout="wide")
 
-st.title("📊 Pretest/Posttest Summary Dashboard")
+st.title("📊 Pretest/Posttest Summary Dashboard (Multi-File)")
 
-st.info("Upload MS Forms quiz Excel (like your sample). App auto-computes totals using 'Total points'. Passing rate = 75%.")
+st.info("Upload one or more Excel files. The app combines all data and computes summary using 75% passing rate.")
 
-uploaded = st.file_uploader("Upload Excel File", type=['xlsx'])
+uploaded_files = st.file_uploader("Upload Excel Files", type=['xlsx'], accept_multiple_files=True)
 
-if uploaded:
-    df = pd.read_excel(uploaded, engine='openpyxl')
+if uploaded_files:
+    combined_df = pd.DataFrame()
+    
+    for file in uploaded_files:
+        df = pd.read_excel(file, engine='openpyxl')
+        df['Source_File'] = file.name
+        combined_df = pd.concat([combined_df, df], ignore_index=True)
 
-    st.subheader("Raw Data Preview")
-    st.dataframe(df.head())
+    st.subheader("Combined Data Preview")
+    st.dataframe(combined_df.head())
 
-    # Detect score column
-    if 'Total points' not in df.columns:
-        st.error("Column 'Total points' not found.")
+    if 'Total points' not in combined_df.columns:
+        st.error("Column 'Total points' not found in uploaded files.")
     else:
-        max_score = df['Total points'].max()
+        max_score = combined_df['Total points'].max()
         passing_score = max_score * 0.75
 
-        df['Passed'] = df['Total points'] >= passing_score
+        combined_df['Passed'] = combined_df['Total points'] >= passing_score
 
-        total = len(df)
-        passers = df['Passed'].sum()
-        failed = total - passers
-        pct = (passers/total)*100
+        # Summary per file (subject-level proxy)
+        summary = combined_df.groupby('Source_File').agg(
+            Total_Takers=('Total points','count'),
+            Passers=('Passed','sum')
+        ).reset_index()
 
-        # Build output table
-        result = pd.DataFrame({
-            'Subjects Taken':['Filipino 6'],
-            'Number of Takers':[total],
-            'Number of Passers':[passers],
-            'Number of Failed':[failed],
-            'Percentage Passing':[round(pct,2)]
-        })
+        summary['Failed'] = summary['Total_Takers'] - summary['Passers']
+        summary['Percentage Passing'] = (summary['Passers'] / summary['Total_Takers']) * 100
+
+        summary.rename(columns={'Source_File':'Subjects Taken'}, inplace=True)
 
         st.subheader("📈 Summary Results")
-        st.dataframe(result)
+        st.dataframe(summary)
 
-        # download
-        file='summary.xlsx'
-        result.to_excel(file, index=False, engine='openpyxl')
+        # Download
+        output_file = "multi_summary.xlsx"
+        summary.to_excel(output_file, index=False, engine='openpyxl')
 
-        with open(file,'rb') as f:
-            st.download_button("⬇️ Download Excel", f, file_name='summary.xlsx')
+        with open(output_file, "rb") as f:
+            st.download_button("⬇️ Download Excel Summary", f, file_name="multi_summary.xlsx")
 
         st.success("Analysis complete ✅")

@@ -59,66 +59,6 @@ st.info(
     "The application will combine all datasets and compute summaries."
 )
 
-import streamlit as st
-import pandas as pd
-import matplotlib.pyplot as plt
-from datetime import datetime
-from io import BytesIO
-
-# ==================================
-# PAGE CONFIGURATION
-# ==================================
-st.set_page_config(
-    page_title="Assessment Summary",
-    page_icon="📊",
-    layout="wide"
-)
-
-# Hide Streamlit default menu/footer
-st.markdown("""
-<style>
-#MainMenu {visibility: hidden;}
-footer {visibility: hidden;}
-header {visibility: hidden;}
-
-.metric-box {
-    background-color: #f8f9fa;
-    padding: 15px;
-    border-radius: 12px;
-    text-align: center;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-}
-
-.footer {
-    text-align:center;
-    color: gray;
-    font-size: 14px;
-}
-</style>
-""", unsafe_allow_html=True)
-
-# ==================================
-# HEADER
-# ==================================
-st.image("logo.gif", use_container_width=True)
-
-st.markdown(
-    """
-    <div style='text-align:center'>
-        <h1>📊 Pretest/Posttest Summarizer</h1>
-        <p style='font-size:18px;color:gray'>
-        Upload Excel files and automatically generate consolidated reports,
-        summary tables, and visual analytics using a 75% passing rate.
-        </p>
-    </div>
-    """,
-    unsafe_allow_html=True
-)
-
-st.info(
-    "📌 Upload one or more Excel files. "
-    "The application will combine all datasets and compute summaries."
-)
 
 # ==================================
 # FILE UPLOAD

@@ -60,26 +60,6 @@ st.info(
 )
 
 
-# ==================================
-# CLEAR BUTTON
-# ==================================
-if "uploaded_files_key" not in st.session_state:
-    st.session_state.uploaded_files_key = 0
-
-col_upload, col_clear = st.columns([4, 1])
-
-with col_upload:
-    uploaded_files = st.file_uploader(
-        "Upload Excel Files",
-        type=["xlsx"],
-        accept_multiple_files=True,
-        key=st.session_state.uploaded_files_key
-    )
-
-with col_clear:
-    if st.button("🗑️ Clear"):
-        st.session_state.uploaded_files_key += 1
-        st.rerun()
 
 
 # ==================================

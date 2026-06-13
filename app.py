@@ -154,105 +154,105 @@ if uploaded_files:
         )
 
         # ==================================
-# VISUAL ANALYTICS (PLOTLY)
-# ==================================
-st.subheader("📊 Visual Analysis")
-
-col1, col2 = st.columns(2)
-
-# ==================================
-# PASSERS VS FAILED
-# ==================================
-with col1:
-
-    pass_fail_df = summary.melt(
-        id_vars="Subjects Taken",
-        value_vars=["Passers", "Failed"],
-        var_name="Status",
-        value_name="Students"
-    )
-
-    fig1 = px.bar(
-        pass_fail_df,
-        x="Subjects Taken",
-        y="Students",
-        color="Status",
-        barmode="group",
-        title="Passers vs Failed per Subject",
-        text="Students",
-        color_discrete_map={
-            "Passers": "#2E8B57",
-            "Failed": "#DC3545"
-        }
-    )
-
-    fig1.update_traces(textposition="outside")
-
-    fig1.update_layout(
-        xaxis_title="Subjects",
-        yaxis_title="Number of Students",
-        legend_title="",
-        height=450,
-        hovermode="x unified"
-    )
-
-    st.plotly_chart(fig1, use_container_width=True)
-
-
-# ==================================
-# PASSING RATE
-# ==================================
-with col2:
-
-    fig2 = px.bar(
-        summary,
-        x="Subjects Taken",
-        y="Percentage Passing",
-        title="Passing Rate (%) per Subject",
-        text=summary["Percentage Passing"].round(1).astype(str) + "%",
-        color="Percentage Passing",
-        color_continuous_scale="Blues"
-    )
-
-    fig2.update_traces(textposition="outside")
-
-    fig2.update_layout(
-        xaxis_title="Subjects",
-        yaxis_title="Passing Rate (%)",
-        coloraxis_showscale=False,
-        height=450
-    )
-
-    st.plotly_chart(fig2, use_container_width=True)
-
-
-# ==================================
-# OVERALL PASS VS FAIL PIE CHART
-# ==================================
-st.markdown("### Overall Passing Distribution")
-
-fig3 = go.Figure(
-    data=[
-        go.Pie(
-            labels=["Pass", "Fail"],
-            values=[total_pass, total_fail],
-            hole=0.45,
-            textinfo="label+percent+value",
-            marker=dict(
-                colors=["#2E8B57", "#DC3545"]
-            ),
-            pull=[0.03, 0]
+        # VISUAL ANALYTICS (PLOTLY)
+        # ==================================
+        st.subheader("📊 Visual Analysis")
+        
+        col1, col2 = st.columns(2)
+        
+        # ==================================
+        # PASSERS VS FAILED
+        # ==================================
+        with col1:
+        
+            pass_fail_df = summary.melt(
+                id_vars="Subjects Taken",
+                value_vars=["Passers", "Failed"],
+                var_name="Status",
+                value_name="Students"
+            )
+        
+            fig1 = px.bar(
+                pass_fail_df,
+                x="Subjects Taken",
+                y="Students",
+                color="Status",
+                barmode="group",
+                title="Passers vs Failed per Subject",
+                text="Students",
+                color_discrete_map={
+                    "Passers": "#2E8B57",
+                    "Failed": "#DC3545"
+                }
+            )
+        
+            fig1.update_traces(textposition="outside")
+        
+            fig1.update_layout(
+                xaxis_title="Subjects",
+                yaxis_title="Number of Students",
+                legend_title="",
+                height=450,
+                hovermode="x unified"
+            )
+        
+            st.plotly_chart(fig1, use_container_width=True)
+        
+        
+        # ==================================
+        # PASSING RATE
+        # ==================================
+        with col2:
+        
+            fig2 = px.bar(
+                summary,
+                x="Subjects Taken",
+                y="Percentage Passing",
+                title="Passing Rate (%) per Subject",
+                text=summary["Percentage Passing"].round(1).astype(str) + "%",
+                color="Percentage Passing",
+                color_continuous_scale="Blues"
+            )
+        
+            fig2.update_traces(textposition="outside")
+        
+            fig2.update_layout(
+                xaxis_title="Subjects",
+                yaxis_title="Passing Rate (%)",
+                coloraxis_showscale=False,
+                height=450
+            )
+        
+            st.plotly_chart(fig2, use_container_width=True)
+        
+        
+        # ==================================
+        # OVERALL PASS VS FAIL PIE CHART
+        # ==================================
+        st.markdown("### Overall Passing Distribution")
+        
+        fig3 = go.Figure(
+            data=[
+                go.Pie(
+                    labels=["Pass", "Fail"],
+                    values=[total_pass, total_fail],
+                    hole=0.45,
+                    textinfo="label+percent+value",
+                    marker=dict(
+                        colors=["#2E8B57", "#DC3545"]
+                    ),
+                    pull=[0.03, 0]
+                )
+            ]
         )
-    ]
-)
-
-fig3.update_layout(
-    title="Overall Pass vs Fail Distribution",
-    height=500,
-    showlegend=True
-)
-
-st.plotly_chart(fig3, use_container_width=True)
+        
+        fig3.update_layout(
+            title="Overall Pass vs Fail Distribution",
+            height=500,
+            showlegend=True
+        )
+        
+        st.plotly_chart(fig3, use_container_width=True)
         # ==================================
         # DOWNLOAD
         # ==================================

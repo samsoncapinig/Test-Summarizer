@@ -4,7 +4,7 @@ import pandas as pd
 
 st.set_page_config(page_title="Assessment Summary", layout="wide")
 
-st.title("📊 Pretest/Posttest Summary Dashboard (Multi-File)")
+st.title("📊 Pretest/Posttest Summarizer")
 
 st.info("Upload one or more Excel files. The app combines all data and computes summary using 75% passing rate.")
 

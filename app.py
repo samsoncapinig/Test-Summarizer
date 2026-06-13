@@ -51,3 +51,26 @@ if uploaded_files:
             st.download_button("⬇️ Download Excel Summary", f, file_name="multi_summary.xlsx")
 
         st.success("Analysis complete ✅")
+
+
+# =============================
+# FOOTER
+# =============================
+
+from datetime import datetime
+
+st.divider()
+
+col_pic, col_text = st.columns([1, 6])
+
+with col_pic:
+    st.image("samson.png", width=80)
+
+with col_text:
+    st.markdown(
+        f"""
+        **Developed by Sir Sam**   
+        Project DESA • SDO Masbate City  
+        © {datetime.now().year} . All rights reserved.
+        """
+    )

@@ -61,6 +61,11 @@ st.info(
 
 
 
+# ==================================
+# SESSION STATE INIT
+# ==================================
+if "clear_uploader" not in st.session_state:
+    st.session_state.clear_uploader = False
 
 # ==================================
 # FILE UPLOAD
@@ -68,8 +73,16 @@ st.info(
 uploaded_files = st.file_uploader(
     "Upload Excel Files",
     type=["xlsx"],
-    accept_multiple_files=True
+    accept_multiple_files=True,
+    key=f"uploader_{st.session_state.clear_uploader}"
 )
+
+# ==================================
+# CLEAR BUTTON
+# ==================================
+if st.button("Clear Uploaded Files"):
+    st.session_state.clear_uploader = not st.session_state.clear_uploader
+    st.rerun()
 
 # ==================================
 # PROCESSING

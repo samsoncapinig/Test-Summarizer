@@ -3,6 +3,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from datetime import datetime
 from io import BytesIO
+import plotly.express as px
+import plotly.graph_objects as go
 
 # ==================================
 # PAGE CONFIGURATION
@@ -152,69 +154,105 @@ if uploaded_files:
         )
 
         # ==================================
-        # VISUAL ANALYTICS
-        # ==================================
-        st.subheader("📊 Visual Analysis")
+# VISUAL ANALYTICS (PLOTLY)
+# ==================================
+st.subheader("📊 Visual Analysis")
 
-        col1, col2 = st.columns(2)
+col1, col2 = st.columns(2)
 
-        # Pass vs Fail
-        with col1:
-            fig1, ax1 = plt.subplots(figsize=(7, 4))
+# ==================================
+# PASSERS VS FAILED
+# ==================================
+with col1:
 
-            summary.set_index(
-                "Subjects Taken"
-            )[["Passers", "Failed"]].plot(
-                kind="bar",
-                ax=ax1,
-                color=["#2E8B57", "#DC3545"]
-            )
+    pass_fail_df = summary.melt(
+        id_vars="Subjects Taken",
+        value_vars=["Passers", "Failed"],
+        var_name="Status",
+        value_name="Students"
+    )
 
-            ax1.set_title("Passers vs Failed")
-            ax1.set_ylabel("Number of Students")
-            ax1.set_xlabel("")
+    fig1 = px.bar(
+        pass_fail_df,
+        x="Subjects Taken",
+        y="Students",
+        color="Status",
+        barmode="group",
+        title="Passers vs Failed per Subject",
+        text="Students",
+        color_discrete_map={
+            "Passers": "#2E8B57",
+            "Failed": "#DC3545"
+        }
+    )
 
-            plt.xticks(rotation=45)
+    fig1.update_traces(textposition="outside")
 
-            st.pyplot(fig1)
+    fig1.update_layout(
+        xaxis_title="Subjects",
+        yaxis_title="Number of Students",
+        legend_title="",
+        height=450,
+        hovermode="x unified"
+    )
 
-        # Passing Rate
-        with col2:
-            fig2, ax2 = plt.subplots(figsize=(7, 4))
+    st.plotly_chart(fig1, use_container_width=True)
 
-            summary.set_index(
-                "Subjects Taken"
-            )["Percentage Passing"].plot(
-                kind="bar",
-                ax=ax2,
-                color="#0D6EFD"
-            )
 
-            ax2.set_title("Passing Rate (%)")
-            ax2.set_ylabel("Percentage")
+# ==================================
+# PASSING RATE
+# ==================================
+with col2:
 
-            plt.xticks(rotation=45)
+    fig2 = px.bar(
+        summary,
+        x="Subjects Taken",
+        y="Percentage Passing",
+        title="Passing Rate (%) per Subject",
+        text=summary["Percentage Passing"].round(1).astype(str) + "%",
+        color="Percentage Passing",
+        color_continuous_scale="Blues"
+    )
 
-            st.pyplot(fig2)
+    fig2.update_traces(textposition="outside")
 
-        # Pie Chart
-        st.markdown("### Overall Passing Distribution")
+    fig2.update_layout(
+        xaxis_title="Subjects",
+        yaxis_title="Passing Rate (%)",
+        coloraxis_showscale=False,
+        height=450
+    )
 
-        fig3, ax3 = plt.subplots(figsize=(6, 6))
+    st.plotly_chart(fig2, use_container_width=True)
 
-        ax3.pie(
-            [total_pass, total_fail],
+
+# ==================================
+# OVERALL PASS VS FAIL PIE CHART
+# ==================================
+st.markdown("### Overall Passing Distribution")
+
+fig3 = go.Figure(
+    data=[
+        go.Pie(
             labels=["Pass", "Fail"],
-            autopct="%1.1f%%",
-            startangle=90,
-            colors=["#2E8B57", "#DC3545"],
-            explode=(0.03, 0)
+            values=[total_pass, total_fail],
+            hole=0.45,
+            textinfo="label+percent+value",
+            marker=dict(
+                colors=["#2E8B57", "#DC3545"]
+            ),
+            pull=[0.03, 0]
         )
+    ]
+)
 
-        ax3.set_title("Overall Pass vs Fail")
+fig3.update_layout(
+    title="Overall Pass vs Fail Distribution",
+    height=500,
+    showlegend=True
+)
 
-        st.pyplot(fig3)
-
+st.plotly_chart(fig3, use_container_width=True)
         # ==================================
         # DOWNLOAD
         # ==================================

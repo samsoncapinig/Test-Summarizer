@@ -1,6 +1,6 @@
-
 import streamlit as st
 import pandas as pd
+import matplotlib.pyplot as plt
 
 st.set_page_config(page_title="Assessment Summary", layout="wide")
 
@@ -31,7 +31,7 @@ if uploaded_files:
 
         combined_df['Passed'] = combined_df['Total points'] >= passing_score
 
-        # Summary per file (subject-level proxy)
+        # Summary per file
         summary = combined_df.groupby('Source_File').agg(
             Total_Takers=('Total points','count'),
             Passers=('Passed','sum')
@@ -45,7 +45,45 @@ if uploaded_files:
         st.subheader("📈 Summary Results")
         st.dataframe(summary)
 
-        # Download
+        # =============================
+        # 📊 GRAPHS SECTION
+        # =============================
+        st.subheader("📊 Visual Analysis")
+
+        # ✅ 1. Bar Chart (Pass vs Fail per Subject)
+        st.markdown("### Passers vs Failed per Subject")
+        fig1, ax1 = plt.subplots()
+        summary.set_index('Subjects Taken')[['Passers', 'Failed']].plot(kind='bar', ax=ax1)
+        ax1.set_ylabel("Number of Students")
+        ax1.set_title("Pass vs Fail per Subject")
+        st.pyplot(fig1)
+
+        # ✅ 2. Passing Rate Chart (%)
+        st.markdown("### Passing Rate (%) per Subject")
+        fig2, ax2 = plt.subplots()
+        summary.set_index('Subjects Taken')['Percentage Passing'].plot(kind='bar', ax=ax2)
+        ax2.set_ylabel("Percentage (%)")
+        ax2.set_title("Passing Rate per Subject")
+        st.pyplot(fig2)
+
+        # ✅ 3. Overall Pie Chart
+        st.markdown("### Overall Pass vs Fail Distribution")
+        total_pass = summary['Passers'].sum()
+        total_fail = summary['Failed'].sum()
+
+        fig3, ax3 = plt.subplots()
+        ax3.pie(
+            [total_pass, total_fail],
+            labels=['Pass', 'Fail'],
+            autopct='%1.1f%%',
+            startangle=90
+        )
+        ax3.set_title("Overall Passing Distribution")
+        st.pyplot(fig3)
+
+        # =============================
+        # DOWNLOAD
+        # =============================
         output_file = "multi_summary.xlsx"
         summary.to_excel(output_file, index=False, engine='openpyxl')
 
@@ -58,7 +96,6 @@ if uploaded_files:
 # =============================
 # FOOTER
 # =============================
-
 from datetime import datetime
 
 st.divider()

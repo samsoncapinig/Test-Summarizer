@@ -70,7 +70,7 @@ with col_text:
     st.markdown(
         f"""
         **Developed by Sir Sam**   
-        Project DESA • SDO Masbate City  
+        Pretest/Postest Summarizer • SDO Masbate City  
         © {datetime.now().year} . All rights reserved.
         """
     )
